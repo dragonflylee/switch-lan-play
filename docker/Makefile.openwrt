@@ -30,6 +30,11 @@ endef
 define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/build-openwrt/src/lan-play $(1)/usr/bin
+
+	$(INSTALL_DIR) $(1)/etc/config/
+	$(INSTALL_CONF) $(PKG_BUILD_DIR)/docker/lan-play.conf $(1)/etc/config/lan-play
+	$(INSTALL_DIR) $(1)/etc/init.d/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/docker/lan-play.init $(1)/etc/init.d/lan-play
 endef
 
 define Package/$(PKG_NAME)/postinst
