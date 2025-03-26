@@ -1,6 +1,6 @@
 include $(TOPDIR)/rules.mk
 
-PKG_RELEASE:=1
+PKG_RELEASE:=22.03
 PKG_VERSION:=0.2.3
 PKG_NAME:=switch-lan-play
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)

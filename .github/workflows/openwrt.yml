@@ -4,6 +4,8 @@ on:
   push:
     tags:
     - 'v*'
+    branches:
+    - '22.03'
 
 jobs:
   release:
@@ -14,20 +16,20 @@ jobs:
       matrix:
         include:
           - arch: aarch64_cortex-a53
-            sdk_url_path: https://downloads.openwrt.org/releases/24.10.0/targets/bcm27xx/bcm2710
-            sdk_name: -sdk-24.10.0-bcm27xx-bcm2710_
+            sdk_url_path: https://downloads.openwrt.org/releases/22.03.7/targets/bcm27xx/bcm2710
+            sdk_name: -sdk-22.03.7-bcm27xx-bcm2710_
           - arch: aarch64_cortex-a72
-            sdk_url_path: https://downloads.openwrt.org/releases/24.10.0/targets/mvebu/cortexa72
-            sdk_name: -sdk-24.10.0-mvebu-cortexa72_
+            sdk_url_path: https://downloads.openwrt.org/releases/22.03.7/targets/mvebu/cortexa72
+            sdk_name: -sdk-22.03.7-mvebu-cortexa72_
           - arch: arm_cortex-a7_neon-vfpv4
-            sdk_url_path: https://downloads.openwrt.org/releases/24.10.0/targets/bcm27xx/bcm2709
-            sdk_name: -sdk-24.10.0-bcm27xx-bcm2709_
+            sdk_url_path: https://downloads.openwrt.org/releases/22.03.7/targets/bcm27xx/bcm2709
+            sdk_name: -sdk-22.03.7-bcm27xx-bcm2709_
           - arch: mipsel_24kc
-            sdk_url_path: https://downloads.openwrt.org/releases/24.10.0/targets/ramips/mt7621
-            sdk_name: -sdk-24.10.0-ramips-mt7621_
+            sdk_url_path: https://downloads.openwrt.org/releases/22.03.7/targets/ramips/mt7621
+            sdk_name: -sdk-22.03.7-ramips-mt7621_
           - arch: x86_64
-            sdk_url_path: https://downloads.openwrt.org/releases/24.10.0/targets/x86/64
-            sdk_name: -sdk-24.10.0-x86-64_
+            sdk_url_path: https://downloads.openwrt.org/releases/22.03.7/targets/x86/64
+            sdk_name: -sdk-22.03.7-x86-64_
 
     env:
       PACKAGE_NAME: switch-lan-play
@@ -61,7 +63,7 @@ jobs:
             echo "SDK can not be verified!"
             exit 1
           fi
-          tar -I zstd -xf "$SDK_DL_DIR/$SDK_FILE" -C "$SDK_HOME" --strip=1
+          tar -Jxf "$SDK_DL_DIR/$SDK_FILE" -C "$SDK_HOME" --strip=1
       - name: Build Packages
         run: |
           cd "$SDK_HOME"
@@ -74,9 +76,8 @@ jobs:
           make package/${PACKAGE_NAME}/compile V=s > /dev/null
           IPK_PATH=$(find "$SDK_HOME/bin" -type f -name "${PACKAGE_NAME}_*.ipk")
           cp -f $IPK_PATH ${{ github.workspace }}
-      - name: Release and Upload Assets
-        uses: softprops/action-gh-release@v2
+      - name: upload built files
+        uses: actions/upload-artifact@v4
         with:
-          files: "*.ipk"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          name: ${{ matrix.arch }}
+          path: "*.ipk"
